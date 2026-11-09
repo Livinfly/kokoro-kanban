@@ -16,6 +16,7 @@ export type IO = {
   stdout: (s: string) => void;
   stderr: (s: string) => void;
   now?: () => Date;
+  isTTY?: boolean;
 };
 
 export class KokoroError extends Error {

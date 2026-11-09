@@ -40,6 +40,24 @@ describe('kokoro status', () => {
   });
 });
 
+describe('kokoro board without a terminal', () => {
+  it('prints the status snapshot instead of hanging, also as the default command', async () => {
+    const k = cli();
+    await k.ok(['session', 'start', '--agent', 'codex', '--title', '无终端']);
+    for (const argv of [['board'], []]) {
+      const r = await k.run(argv);
+      expect(r.code).toBe(0);
+      expect(r.stdout).toContain('无终端');
+      expect(r.stderr).toMatch(/not a terminal/);
+    }
+  });
+
+  it('rejects an unknown panel', async () => {
+    const r = await cli().run(['board', '--panel', 'nope']);
+    expect(r.code).toBe(1);
+  });
+});
+
 describe('kokoro doctor', () => {
   it('prints ok for a clean setup', async () => {
     const k = cli();
