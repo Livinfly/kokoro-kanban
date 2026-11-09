@@ -8,9 +8,23 @@ import { registerGoal } from './commands/goal.js';
 import { registerInit } from './commands/init.js';
 import { registerJob } from './commands/job.js';
 import { registerRun } from './commands/run.js';
+import { registerSkill } from './commands/skill.js';
 import { registerSession } from './commands/session.js';
 import { registerStatus } from './commands/status.js';
 import { type App, type IO, KokoroError } from './context.js';
+
+const HELP_FOOTER = `
+Store resolution (writes):
+  --store > $KOKORO_STORE > nearest .kokoro-kanban/ upward > ~/.kokoro-kanban/ ($KOKORO_HOME)
+
+Typical agent flow:
+  $ kokoro session start --id "$CODEX_THREAD_ID" --agent codex --title "refactor login"
+  $ kokoro goal add --session "$CODEX_THREAD_ID" --title "login refactor" --step "audit" --step "migrate"
+  $ kokoro run --session "$CODEX_THREAD_ID" --title "download model" --detach -- hf download org/model
+  $ kokoro ask add --session "$CODEX_THREAD_ID" --kind approval "drop the old sessions table?"
+  $ kokoro session end "$CODEX_THREAD_ID"
+
+Run \`kokoro <command> -h\` for details.`;
 
 export async function main(argv: string[], io: IO): Promise<number> {
   let exitCode = 0;
@@ -22,7 +36,8 @@ export async function main(argv: string[], io: IO): Promise<number> {
     .option('--store <dir>', 'write to this store instead of auto-resolving')
     .option('--json', 'machine-readable output')
     .exitOverride()
-    .configureOutput({ writeOut: io.stdout, writeErr: io.stderr });
+    .configureOutput({ writeOut: io.stdout, writeErr: io.stderr })
+    .addHelpText('after', HELP_FOOTER);
 
   const app: App = {
     program,
@@ -38,6 +53,7 @@ export async function main(argv: string[], io: IO): Promise<number> {
   registerRun(app);
   registerArchive(app);
   registerInit(app);
+  registerSkill(app);
   registerBoard(app);
   registerStatus(app);
   registerDoctor(app);
