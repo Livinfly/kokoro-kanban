@@ -7,24 +7,24 @@
 <p align="center">English | <a href="README.zh-CN.md">简体中文</a></p>
 
 ```
- kokoro-kanban  2 sessions · 1 job running · 1 needs you                                 19:52
-╭──────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Needs you (1)                                                                                │
-│ ▶ a-9d0e approval 要不要删掉旧的 session 表？ · s-7f3a 重构登录 · 5m                         │
-╰──────────────────────────────────────────────────────────────────────────────────────────────╯
-╭──────────────────────────────────────────────╮╭──────────────────────────────────────────────╮
-│ Sessions (2)                                 ││ Jobs (2)                                     │
-│ ~/work/app                                   ││ ▶ j-2c91 下载模型 ████████░░ 78% for 12m     │
-│ ● s-7f3a codex working 2m 重构登录           ││     1.2/1.6 GB · shard 3/4 · [s-1b2c]        │
-│     改 middleware                            ││ ✗ j-77aa 构建 failed (exit 1) 15m ago        │
-│ ~/thesis                                     ││                                              │
-│ ◐ s-1b2c claude waiting 5m 微调模型          ││                                              │
-╰──────────────────────────────────────────────╯╰──────────────────────────────────────────────╯
-╭──────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Goals / Next (1)                                                                             │
-│ g-1b2c 登录重构 (s-7f3a) 1/3 done · doing: 迁移 middleware · next: 补测试                    │
-│     [x] 梳理现状  [~] 迁移 middleware  [ ] 补测试                                            │
-╰──────────────────────────────────────────────────────────────────────────────────────────────╯
+ kokoro-kanban  2 sessions · 1 job running · 1 needs you                                      19:52
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Needs you (1)                                                                                    │
+│ ▶ a-9d0e approval Drop the old sessions table? · s-7f3a refactor login · 5m                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────╮╭────────────────────────────────────────────────╮
+│ Sessions (2)                                   ││ Jobs (2)                                       │
+│ ~/work/app                                     ││ ▶ j-2c91 download model ████████░░ 78% for 12m │
+│ ● s-7f3a codex working 2m refactor login       ││     1.2/1.6 GB · shard 3/4 · [s-1b2c]          │
+│     rewriting auth middleware                  ││ ✗ j-77aa build failed (exit 1) 15m ago         │
+│ ~/thesis                                       ││                                                │
+│ ◐ s-1b2c claude waiting 5m fine-tune model     ││                                                │
+╰────────────────────────────────────────────────╯╰────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Goals / Next (1)                                                                                 │
+│ g-1b2c login refactor (s-7f3a) 1/3 done · doing: migrate middleware · next: add tests            │
+│     [x] audit current flow  [~] migrate middleware  [ ] add tests                                │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 A local execution board for agent sessions. When you have several Codex / Claude Code / Cursor sessions open and downloads or training runs going in the background, you no longer have to ask each conversation "how far along is it?". Agents report through `kokoro` commands as described in the bundled skill, and `kokoro board` shows every session live in your terminal.
