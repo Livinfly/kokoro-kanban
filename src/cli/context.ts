@@ -103,6 +103,10 @@ export class CliContext {
     return next;
   }
 
+  touchSessionIfExists(id: string | null): void {
+    if (id && this.locate('session', id)) this.touchSession(id);
+  }
+
   deriveCtx(): DeriveCtx {
     return deriveCtxFor(this.home, this.nowDate());
   }

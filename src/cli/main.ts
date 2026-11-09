@@ -1,7 +1,11 @@
 import { Command, CommanderError } from 'commander';
 import pkg from '../../package.json' with { type: 'json' };
+import { registerArchive } from './commands/archive.js';
+import { registerAsk } from './commands/ask.js';
 import { registerDoctor } from './commands/doctor.js';
+import { registerGoal } from './commands/goal.js';
 import { registerInit } from './commands/init.js';
+import { registerJob } from './commands/job.js';
 import { registerSession } from './commands/session.js';
 import { registerStatus } from './commands/status.js';
 import { type App, type IO, KokoroError } from './context.js';
@@ -26,6 +30,10 @@ export async function main(argv: string[], io: IO): Promise<number> {
     },
   };
   registerSession(app);
+  registerGoal(app);
+  registerJob(app);
+  registerAsk(app);
+  registerArchive(app);
   registerInit(app);
   registerStatus(app);
   registerDoctor(app);
