@@ -29,6 +29,11 @@ export function findProjectStore(cwd: string, home: string): string | null {
   }
 }
 
+export function currentProject(cwd: string, home: string): string {
+  const store = findProjectStore(cwd, home);
+  return store ? path.dirname(store) : path.resolve(cwd);
+}
+
 export function targetFor(dir: string, home: string): StoreTarget {
   return dir === home
     ? { dir, kind: 'global', projectRoot: null }
