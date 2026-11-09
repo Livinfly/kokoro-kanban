@@ -6,6 +6,7 @@ import { registerDoctor } from './commands/doctor.js';
 import { registerGoal } from './commands/goal.js';
 import { registerInit } from './commands/init.js';
 import { registerJob } from './commands/job.js';
+import { registerRun } from './commands/run.js';
 import { registerSession } from './commands/session.js';
 import { registerStatus } from './commands/status.js';
 import { type App, type IO, KokoroError } from './context.js';
@@ -33,6 +34,7 @@ export async function main(argv: string[], io: IO): Promise<number> {
   registerGoal(app);
   registerJob(app);
   registerAsk(app);
+  registerRun(app);
   registerArchive(app);
   registerInit(app);
   registerStatus(app);
