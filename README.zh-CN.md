@@ -1,6 +1,10 @@
-# kokoro-kanban
+<p align="center">
+  <img src="assets/logo-256.png" alt="kokoro-kanban logo" width="200">
+</p>
 
-[English](README.md) | 简体中文
+<h1 align="center">kokoro-kanban</h1>
+
+<p align="center"><a href="README.md">English</a> | 简体中文</p>
 
 ```
  kokoro-kanban  2 sessions · 1 job running · 1 needs you                                 19:52
