@@ -42,10 +42,13 @@ npm link            # 提供 kokoro 和 kokoro-kanban 两个命令
 给 agent 装上 skill：
 
 ```bash
-kokoro skill install --target codex    # 复制到 ~/.codex/skills/kokoro-kanban/SKILL.md
-kokoro skill install --target claude   # ~/.claude/skills/kokoro-kanban/SKILL.md
-kokoro skill install --target cursor   # ~/.cursor/skills/kokoro-kanban/SKILL.md
+kokoro skill install --target codex    # 复制到 ~/.agents/skills/kokoro-kanban/SKILL.md
+kokoro skill install --target claude   # $CLAUDE_CONFIG_DIR/skills/...，默认 ~/.claude/skills/
+kokoro skill install --target cursor   # $CURSOR_CONFIG_DIR/skills/...，默认 ~/.cursor/skills/
+kokoro skill install --dir .agents/skills   # 装到任意 skills 目录，比如项目内
 ```
+
+不管 `CODEX_HOME` 设在哪里，Codex 都会从 `~/.agents/skills` 读取用户级 skill；`$CODEX_HOME/skills` 目前还能用，但 Codex 已标为废弃。Cursor 也会读 `~/.agents/skills`，所以对 Cursor 来说两种装法装一个就够了。
 
 然后在一个终端里开着看板：
 

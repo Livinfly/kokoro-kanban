@@ -42,10 +42,13 @@ npm link            # provides the kokoro and kokoro-kanban commands
 Install the skill for your agents:
 
 ```bash
-kokoro skill install --target codex    # copies to ~/.codex/skills/kokoro-kanban/SKILL.md
-kokoro skill install --target claude   # ~/.claude/skills/kokoro-kanban/SKILL.md
-kokoro skill install --target cursor   # ~/.cursor/skills/kokoro-kanban/SKILL.md
+kokoro skill install --target codex    # copies to ~/.agents/skills/kokoro-kanban/SKILL.md
+kokoro skill install --target claude   # $CLAUDE_CONFIG_DIR/skills/..., default ~/.claude/skills/
+kokoro skill install --target cursor   # $CURSOR_CONFIG_DIR/skills/..., default ~/.cursor/skills/
+kokoro skill install --dir .agents/skills   # any skills directory, e.g. inside a project
 ```
+
+Codex reads user skills from `~/.agents/skills` no matter where `CODEX_HOME` points; `$CODEX_HOME/skills` still works but Codex marks it deprecated. Cursor also picks up `~/.agents/skills`, so for Cursor one of the two installs is enough.
 
 Then keep the board open in a terminal:
 

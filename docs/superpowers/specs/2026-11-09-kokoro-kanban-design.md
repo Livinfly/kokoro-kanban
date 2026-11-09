@@ -213,7 +213,7 @@ kokoro archive <id>...
 kokoro status [--here] [--json]
 kokoro doctor
 kokoro init
-kokoro skill install --target codex|claude|cursor
+kokoro skill install --target codex|claude|cursor | --dir <path>
 kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 ```
 
@@ -227,7 +227,7 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 - 写入项目存储后登记到全局 `stores.json` 失败时（常见于 agent 沙箱不允许写 `~/.kokoro-kanban`），只在 stderr 警告一次，写入本身照常完成。
 - 不在终端里执行 `kokoro` / `kokoro board` 时（stdin 或 stdout 不是 TTY），在 stderr 提示一句，然后打印 `kokoro status` 的内容并退出，避免 agent 误调用时卡住。
 - `kokoro doctor` 列出解析失败的文件（路径和原因）以及登记了但已不存在的项目存储。
-- `kokoro skill install` 把 `skills/kokoro-kanban/SKILL.md` 复制到 `~/.codex/skills/kokoro-kanban/`、`~/.claude/skills/kokoro-kanban/` 或 `~/.cursor/skills/kokoro-kanban/`。
+- `kokoro skill install` 把 `skills/kokoro-kanban/SKILL.md` 复制到各 agent 加载用户级 skill 的目录：codex 是 `~/.agents/skills/kokoro-kanban/`（Codex 已把 `$CODEX_HOME/skills` 标为废弃，且无论 `CODEX_HOME` 设在哪里都会读 `~/.agents/skills`）；claude 是 `$CLAUDE_CONFIG_DIR/skills/kokoro-kanban/`，默认 `~/.claude/skills/`；cursor 是 `$CURSOR_CONFIG_DIR/skills/kokoro-kanban/`，默认 `~/.cursor/skills/`。环境变量值开头的 `~` 会展开。`--dir <path>` 装到任意 skills 目录（相对当前目录），与 `--target` 二选一。
 
 ## 7. `kokoro run` 包装器
 
