@@ -219,6 +219,8 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 
 补充说明：
 
+- `kokoro -h` 是英文帮助：commander 生成的命令列表之后，追加 “Store resolution” 一段（写入时的存储解析顺序）和 “Typical agent flow” 一段（从 `session start` 到 `session end` 的五条示例命令）。命令组的参数在下一层查看，如 `kokoro job progress -h`。
+- `job start` 打印 job ID；加 `--json` 时返回 `{"id", "progress_file", "log"}`，方便不经过 `kokoro run` 启动的进程直接追加进度行。
 - `session start --id` 用于 agent 想用自己的会话 ID 的情况，ID 须匹配 `[A-Za-z0-9._-]{1,64}`；ID 已存在时视为恢复，把 `status` 设为 `working`、`ended_at` 清空，不报错。
 - 除 `session end` 外，任何带 `--session` 的写入命令都会顺带刷新该 session 的 `updated_at`。
 - `kokoro doctor` 列出解析失败的文件（路径和原因）以及登记了但已不存在的项目存储。
@@ -240,7 +242,7 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 
 位置：`skills/kokoro-kanban/SKILL.md`。同一份文件适用于 Codex、Claude Code、Cursor。约定如下：
 
-- 会话开始时执行 `kokoro session start`，记住返回的 ID，之后所有命令都带 `--session`。
+- 会话开始时执行 `kokoro session start`，记住返回的 ID，之后所有命令都带 `--session`。如果 agent 能拿到自己真实的会话 ID，就用 `--id` 传入，这样恢复会话时不会产生重复卡片。Codex、Claude Code、Cursor 各自是否向 agent 暴露会话 ID，在实现阶段逐个确认后写进 skill。
 - 确定目标或计划变化时，执行 `goal add` 或 `goal step`；开始做某一步时把它设为 `doing`，做完设为 `done`。
 - 预计超过约 1 分钟的命令（下载、训练、构建、完整测试）用 `kokoro run` 包装，需要后台运行时加 `--detach`，之后可以读日志文件查看输出。
 - 卡住或需要人做决定时执行 `kokoro ask add`；人在对话里答复后执行 `kokoro ask resolve`。
@@ -351,6 +353,10 @@ skills/kokoro-kanban/SKILL.md
 - 在看板里直接回复，并让回复进入 agent 对话（通过 Claude Code、Codex 的 hooks 自动注入，或 tmux send-keys）
 - 打包成 Codex、Claude Code 插件，提供 MCP 接口
 - 被动数据源：读取 `~/.codex/goals_1.sqlite`、agent 的会话 JSONL
-- 自动解析 curl、wget、pip 等命令输出里的进度
+- 第三方工具的进度接入（如 `hf download`、curl、pip）。v1 只把输出写进日志。不采用“取输出最后一行的百分比”这种通用解析，因为这类工具常常同时显示多条进度条（总进度和每个文件各一条），会读到错误的数字。可选思路，按可靠程度从低到高：
+  - 按工具写解析器（`kokoro run --adapter <工具>`）：信息最细，但工具升级后容易失效。
+  - 探测外部状态：定期统计目标目录大小或文件数，除以事先查到的总量（hf 可通过 API 查到文件大小）。与输出格式无关，倾向作为下载类任务的主方案。
+  - 库级别回调：Python 脚本调用 `snapshot_download` 等 API 时，传入自定义 tqdm 类把进度转给 kokoro，只适用于调用库的场景。
+- 输出标记行：脚本打印 `::kokoro done=2 total=3` 这样的行，由 `kokoro run` 识别后写入进度文件
 - Web 和 GUI 界面
 - 跨机器同步
