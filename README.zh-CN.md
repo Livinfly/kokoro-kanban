@@ -1,8 +1,6 @@
-<h1 align="center">
-  <img src="assets/logo-256.png" alt="秦心" width="120" align="middle">
-  kokoro-kanban
-  <img src="assets/mark-256.png" alt="kokoro-kanban 图标" width="120" align="middle">
-</h1>
+<p align="center">
+  <img src="assets/banner.png" alt="kokoro-kanban" width="100%">
+</p>
 
 <p align="center"><a href="README.md">English</a> | 简体中文</p>
 
