@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Session } from '../../src/model/schema.js';
@@ -102,6 +102,19 @@ describe('store selection', () => {
       env: { KOKORO_STORE: envStore },
     });
     expect(existsSync(entityPath(flagStore, 'session', b))).toBe(true);
+  });
+
+  it('still writes to a project store when the global registry is not writable', async () => {
+    const k = cli();
+    await k.ok(['init']);
+    const blocked = path.join(k.sb.root, 'not-a-dir');
+    writeFileSync(blocked, '');
+    const r = await k.run(['session', 'start', '--agent', 'cursor', '--title', 't'], {
+      env: { KOKORO_HOME: path.join(blocked, '.kokoro-kanban') },
+    });
+    expect(r.code).toBe(0);
+    expect(r.stderr).toMatch(/could not register/);
+    expect(existsSync(entityPath(path.join(k.sb.work, '.kokoro-kanban'), 'session', r.stdout.trim()))).toBe(true);
   });
 
   it('updates find an entity in another known store', async () => {

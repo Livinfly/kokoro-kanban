@@ -84,8 +84,23 @@ export class CliContext {
 
   save<K extends Kind>(store: string, kind: K, entity: EntityOf<K>): void {
     writeEntity(store, kind, entity);
-    if (store !== this.home) registerStore(this.home, store);
+    if (store !== this.home) this.register(store);
   }
+
+  register(store: string): void {
+    try {
+      registerStore(this.home, store);
+    } catch (err) {
+      if (this.registerWarned) return;
+      this.registerWarned = true;
+      this.io.stderr(
+        `kokoro: could not register ${store} in ${this.home}/stores.json (${(err as NodeJS.ErrnoException).code ?? (err as Error).message}); ` +
+          `run \`kokoro init\` in that project outside the sandbox so the board can find it\n`,
+      );
+    }
+  }
+
+  private registerWarned = false;
 
   locate<K extends Kind>(kind: K, id: string): { store: string; entity: EntityOf<K> } | null {
     return locateEntity(kind, id, this.target.dir, this.home);
