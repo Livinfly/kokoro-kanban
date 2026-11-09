@@ -1,8 +1,8 @@
-<p align="center">
-  <img src="assets/logo-256.png" alt="kokoro-kanban logo" width="200">
-</p>
-
-<h1 align="center">kokoro-kanban</h1>
+<h1 align="center">
+  <img src="assets/logo-256.png" alt="Hata no Kokoro" width="120" align="middle">
+  kokoro-kanban
+  <img src="assets/mark-256.png" alt="kokoro-kanban mark" width="120" align="middle">
+</h1>
 
 <p align="center">English | <a href="README.zh-CN.md">简体中文</a></p>
 
@@ -160,3 +160,9 @@ npm run dev -- status
 ```
 
 The design doc is in `docs/superpowers/specs/` and the implementation plan in `docs/superpowers/plans/`.
+
+## License
+
+The code is released under the [MIT License](LICENSE).
+
+The images in `assets/` are fan art of Hata no Kokoro from Touhou Project (© Team Shanghai Alice) and are not covered by the MIT License.

@@ -1,8 +1,8 @@
-<p align="center">
-  <img src="assets/logo-256.png" alt="kokoro-kanban logo" width="200">
-</p>
-
-<h1 align="center">kokoro-kanban</h1>
+<h1 align="center">
+  <img src="assets/logo-256.png" alt="秦心" width="120" align="middle">
+  kokoro-kanban
+  <img src="assets/mark-256.png" alt="kokoro-kanban 图标" width="120" align="middle">
+</h1>
 
 <p align="center"><a href="README.md">English</a> | 简体中文</p>
 
@@ -160,3 +160,9 @@ npm run dev -- status
 ```
 
 设计文档在 `docs/superpowers/specs/`，实现计划在 `docs/superpowers/plans/`。
+
+## 许可证
+
+代码以 [MIT 许可证](LICENSE) 发布。
+
+`assets/` 中的图片是东方 Project 角色秦心（秦こころ）的同人图，角色版权归上海爱丽丝幻乐团所有，不在 MIT 许可证范围内。
