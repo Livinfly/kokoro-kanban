@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { foldProgress } from '../../src/model/progress.js';
-import { age, bar, progressText, tildify } from '../../src/view/format.js';
+import { age, bar, progressText, shortId, tildify } from '../../src/view/format.js';
 
 const now = new Date('2026-11-09T12:00:00.000Z');
 const ago = (ms: number) => new Date(now.getTime() - ms).toISOString();
@@ -37,6 +37,14 @@ describe('progressText', () => {
 
   it('is null without any numbers', () => {
     expect(progressText(p({ msg: 'hi' }))).toBeNull();
+  });
+});
+
+describe('shortId', () => {
+  it('keeps short ids and trims long host session ids', () => {
+    expect(shortId('s-7f3a')).toBe('s-7f3a');
+    expect(shortId('my.session.12')).toBe('my.session.12');
+    expect(shortId('059e64b5-2d7c-4654-9012-0fe90d22126e')).toBe('059e64b5…');
   });
 });
 

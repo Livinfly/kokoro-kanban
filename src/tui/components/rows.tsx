@@ -1,7 +1,7 @@
 import { Box, Text } from 'ink';
 import type { Session, Step } from '../../model/schema.js';
 import type { AskView, GoalView, JobDisplay, JobView, SessionView } from '../../view/board.js';
-import { age, bar, progressText } from '../../view/format.js';
+import { age, bar, progressText, shortId } from '../../view/format.js';
 import { goalSummaryText, jobStateText, jobTimeText } from '../../view/text.js';
 
 export const SESSION_ICON: Record<Session['status'], { icon: string; color: string }> = {
@@ -24,7 +24,7 @@ export const STEP_MARK: Record<Step['status'], string> = { todo: '[ ]', doing: '
 type RowProps<T> = { item: T; selected: boolean; now: Date };
 
 export function NeedRow({ item: a, selected, now, sessionTitle }: RowProps<AskView> & { sessionTitle?: string }) {
-  const owner = a.session ? ` · ${a.session}${sessionTitle ? ` ${sessionTitle}` : ''}` : '';
+  const owner = a.session ? ` · ${shortId(a.session)}${sessionTitle ? ` ${sessionTitle}` : ''}` : '';
   return (
     <Text wrap="truncate-end" inverse={selected}>
       <Text color="yellow">▶ </Text>
@@ -41,7 +41,7 @@ export function SessionRow({ item: s, selected, now }: RowProps<SessionView>) {
   return (
     <Box flexDirection="column">
       <Text wrap="truncate-end" inverse={selected}>
-        <Text color={color}>{icon}</Text> {s.id} {s.agent} <Text color={color}>{s.status}</Text>{' '}
+        <Text color={color}>{icon}</Text> {shortId(s.id)} {s.agent} <Text color={color}>{s.status}</Text>{' '}
         <Text dimColor>{age(s.updated_at, now)}</Text>
         {s.stale ? <Text color="yellow"> stale</Text> : null} {s.title}
       </Text>
@@ -60,7 +60,7 @@ export function JobRow({ item: j, selected, now }: RowProps<JobView>) {
   const pct = j.display === 'running' ? j.progress.pct : null;
   const status = pct !== null ? `${bar(pct, 10)} ${Math.round(pct)}%` : jobStateText(j);
   const counters = j.progress.done !== null && j.progress.total !== null ? progressText({ ...j.progress, pct: null }) : null;
-  const details = [counters, j.progress.msg ?? j.message, j.session ? `[${j.session}]` : null].filter(Boolean);
+  const details = [counters, j.progress.msg ?? j.message, j.session ? `[${shortId(j.session)}]` : null].filter(Boolean);
   return (
     <Box flexDirection="column">
       <Text wrap="truncate-end" inverse={selected}>
@@ -84,7 +84,7 @@ export function GoalRow({ item: g, selected }: RowProps<GoalView>) {
     <Box flexDirection="column">
       <Text wrap="truncate-end" inverse={selected}>
         <Text bold>{g.id}</Text> {g.title}
-        {g.session ? <Text dimColor> ({g.session})</Text> : null} <Text color="cyan">{goalSummaryText(g)}</Text>
+        {g.session ? <Text dimColor> ({shortId(g.session)})</Text> : null} <Text color="cyan">{goalSummaryText(g)}</Text>
       </Text>
       {steps ? (
         <Text wrap="truncate-end" dimColor>

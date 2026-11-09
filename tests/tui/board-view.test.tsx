@@ -24,6 +24,20 @@ describe('BoardView overview', () => {
     expect(out).toContain('迁移 middleware');
   });
 
+  it('shortens long host session ids in rows but not in the detail view', () => {
+    const uuid = '059e64b5-2d7c-4654-9012-0fe90d22126e';
+    const board = sampleBoard();
+    const s = board.sessionGroups[0]!.sessions[0]!;
+    const withUuid = { ...board, sessionGroups: [{ ...board.sessionGroups[0]!, sessions: [{ ...s, id: uuid }] }] };
+    const render = (ui: UiState) =>
+      renderToString(<BoardView board={withUuid} ui={ui} width={120} height={40} now={NOW} homeDir="/home/me" logLines={[]} />, {
+        columns: 120,
+      });
+    expect(render(initialUi())).toContain('059e64b5…');
+    expect(render(initialUi())).not.toContain(uuid);
+    expect(render({ ...initialUi(), detail: { kind: 'session', id: uuid } })).toContain(uuid);
+  });
+
   it('marks lost jobs and stale sessions', () => {
     const out = view(initialUi());
     expect(out).toMatch(/j-8812.*lost/);

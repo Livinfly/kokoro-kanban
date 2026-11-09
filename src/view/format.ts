@@ -29,6 +29,10 @@ export function progressText(p: Progress): string | null {
   return parts.length ? parts.join(' · ') : null;
 }
 
+export function shortId(id: string): string {
+  return id.length > 16 ? `${id.slice(0, 8)}…` : id;
+}
+
 export function bar(pct: number, width: number): string {
   const filled = Math.round((Math.min(100, Math.max(0, pct)) / 100) * width);
   return '█'.repeat(filled) + '░'.repeat(width - filled);
