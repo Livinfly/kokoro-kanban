@@ -222,7 +222,10 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 - `kokoro -h` 是英文帮助：commander 生成的命令列表之后，追加 “Store resolution” 一段（写入时的存储解析顺序）和 “Typical agent flow” 一段（从 `session start` 到 `session end` 的五条示例命令）。命令组的参数在下一层查看，如 `kokoro job progress -h`。
 - `job start` 打印 job ID；加 `--json` 时返回 `{"id", "progress_file", "log"}`，方便不经过 `kokoro run` 启动的进程直接追加进度行。
 - `session start --id` 用于 agent 想用自己的会话 ID 的情况，ID 须匹配 `[A-Za-z0-9._-]{1,64}`；ID 已存在时视为恢复，把 `status` 设为 `working`、`ended_at` 清空，不报错。
-- 除 `session end` 外，任何带 `--session` 的写入命令都会顺带刷新该 session 的 `updated_at`。
+- 除 `session end` 外，任何带 `--session` 的写入命令都会顺带刷新该 session 的 `updated_at`；agent 主动执行的 `goal step/done/drop` 和 `ask resolve` 也会刷新所属 session。`job progress` 和 `job end` 不刷新，因为它们通常来自后台脚本，不代表 agent 本身在活动。
+- `ask add` 的正文是可变参数，未加引号的多个词会用空格拼起来；`run --title` 可省略，默认取命令行前 80 个字符。
+- 写入项目存储后登记到全局 `stores.json` 失败时（常见于 agent 沙箱不允许写 `~/.kokoro-kanban`），只在 stderr 警告一次，写入本身照常完成。
+- 不在终端里执行 `kokoro` / `kokoro board` 时（stdin 或 stdout 不是 TTY），在 stderr 提示一句，然后打印 `kokoro status` 的内容并退出，避免 agent 误调用时卡住。
 - `kokoro doctor` 列出解析失败的文件（路径和原因）以及登记了但已不存在的项目存储。
 - `kokoro skill install` 把 `skills/kokoro-kanban/SKILL.md` 复制到 `~/.codex/skills/kokoro-kanban/`、`~/.claude/skills/kokoro-kanban/` 或 `~/.cursor/skills/kokoro-kanban/`。
 
@@ -242,7 +245,7 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 
 位置：`skills/kokoro-kanban/SKILL.md`。同一份文件适用于 Codex、Claude Code、Cursor。约定如下：
 
-- 会话开始时执行 `kokoro session start`，记住返回的 ID，之后所有命令都带 `--session`。如果 agent 能拿到自己真实的会话 ID，就用 `--id` 传入，这样恢复会话时不会产生重复卡片。Codex、Claude Code、Cursor 各自是否向 agent 暴露会话 ID，在实现阶段逐个确认后写进 skill。
+- 会话开始时执行 `kokoro session start --id "$SID"`，之后所有命令都带 `--session "$SID"`，agent 不需要记 ID，恢复会话时也不会产生重复卡片。`$SID` 取宿主注入的环境变量：Codex 是 `CODEX_THREAD_ID`（0.95.0 起），Claude Code 是 `CLAUDE_CODE_SESSION_ID`，Cursor 是 `CURSOR_CONVERSATION_ID`。都没有时不传 `--id`，记住返回的 `s-xxxx`。
 - 确定目标或计划变化时，执行 `goal add` 或 `goal step`；开始做某一步时把它设为 `doing`，做完设为 `done`。
 - 预计超过约 1 分钟的命令（下载、训练、构建、完整测试）用 `kokoro run` 包装，需要后台运行时加 `--detach`，之后可以读日志文件查看输出。
 - 卡住或需要人做决定时执行 `kokoro ask add`；人在对话里答复后执行 `kokoro ask resolve`。
@@ -310,6 +313,7 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 - 用 chokidar 监听所有被读取的存储目录（不含 `archive/`）；同一文件的变更做 100ms 防抖，只重新读取变化的文件。
 - `stores.json` 变化时重新计算监听目录。
 - 每 2 秒重新计算与时间相关的状态：相对时间、stale、lost（存活检查用 `process.kill(pid, 0)`）。
+- 文件监听报错时（如文件描述符耗尽、沙箱限制），改为每 2 秒全量重新读取一次所有存储，保证看板不会悄悄停止更新。
 
 ## 10. 错误处理
 
@@ -325,7 +329,7 @@ kokoro [board] [--here] [--panel needs|sessions|jobs|goals]
 
 ## 11. 技术栈与代码结构
 
-TypeScript，Node 22，ESM。依赖：commander、zod、ink、react、chokidar。开发依赖：typescript、tsup、tsx、vitest、ink-testing-library。v1 通过 `npm link` 在本地安装。
+TypeScript，Node 22.22+，ESM。依赖：commander 15、zod 4、ink 8、react 19、chokidar 6。开发依赖：typescript、tsup、tsx、vitest、ink-testing-library。v1 通过 `npm link` 在本地安装。
 
 ```
 src/model/    类型、zod schema、推算状态（纯函数）

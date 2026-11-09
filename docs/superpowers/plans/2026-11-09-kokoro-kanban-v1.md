@@ -8,7 +8,7 @@
 
 **Architecture:** Agents call `kokoro` subcommands that validate input and atomically write JSON / JSONL files into a store directory. A `StoreIndex` loads all known stores into memory and refreshes single files on change; `kokoro status` and the Ink TUI both render a `Board` view model built from that index, so they always agree.
 
-**Tech Stack:** TypeScript (ESM), Node 22, commander, zod, ink 6 + react 19, chokidar 4; tsup, tsx, vitest, ink-testing-library.
+**Tech Stack:** TypeScript (ESM), Node 22.22+, commander 15, zod 4, ink 8 + react 19, chokidar 6; tsup, tsx, vitest, ink-testing-library.
 
 ## Global Constraints
 
