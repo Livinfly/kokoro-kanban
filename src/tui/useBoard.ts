@@ -11,7 +11,7 @@ import { boardFrom } from '../view/load.js';
 export const DEBOUNCE_MS = 100;
 export const TICK_MS = 2000;
 
-export type BoardSource = { board: Board; now: Date; version: number };
+export type BoardSource = { board: Board; now: Date; version: number; reload: () => void };
 
 function ignoredFor(stores: string[]) {
   return (p: string) => {
@@ -49,6 +49,11 @@ export function useBoard(opts: { home: string; projectFilter: string | null; sho
       });
       watcher.on('error', () => {
         polling = true;
+      });
+      watcher.on('ready', () => {
+        if (closed) return;
+        index.loadAll();
+        setVersion((v) => v + 1);
       });
       watcher.on('all', (_event, file) => {
         clearTimeout(timers.get(file));
@@ -91,5 +96,9 @@ export function useBoard(opts: { home: string; projectFilter: string | null; sho
     () => boardFrom(indexRef.current!, { home, now, projectFilter: opts.projectFilter, showAll: opts.showAll }),
     [home, now, version, opts.projectFilter, opts.showAll],
   );
-  return { board, now, version };
+  const reload = () => {
+    indexRef.current!.loadAll();
+    setVersion((v) => v + 1);
+  };
+  return { board, now, version, reload };
 }

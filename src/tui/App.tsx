@@ -24,7 +24,7 @@ function applyEffect(effect: Exclude<Effect, { type: 'quit' }>): void {
 
 export function App({ home, homeDir, cwd, here, panel }: AppProps) {
   const [ui, setUi] = useState(() => initialUi(panel, here ? currentProject(cwd, home) : null));
-  const { board, now, version } = useBoard({ home, projectFilter: ui.projectFilter, showAll: ui.showAll });
+  const { board, now, version, reload } = useBoard({ home, projectFilter: ui.projectFilter, showAll: ui.showAll });
   const { columns, rows } = useWindowSize();
   const { exit } = useApp();
 
@@ -41,6 +41,7 @@ export function App({ home, homeDir, cwd, here, panel }: AppProps) {
         setUi({ ...next, message: `failed: ${(err as Error).message}` });
         return;
       }
+      reload();
     }
     setUi(next);
   });

@@ -10,10 +10,10 @@ afterEach(() => {
   while (instances.length) instances.pop()!.unmount();
 });
 
-async function until(check: () => boolean, timeoutMs = 5000): Promise<void> {
+async function until(check: () => boolean, label = 'condition', timeoutMs = 5000): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (!check()) {
-    if (Date.now() > deadline) throw new Error('timed out');
+    if (Date.now() > deadline) throw new Error(`timed out waiting for ${label}`);
     await new Promise((r) => setTimeout(r, 25));
   }
 }
@@ -38,10 +38,10 @@ describe('App', () => {
     const sb = sandbox();
     writeEntity(sb.home, 'ask', makeAsk({ id: 'a-0001', text: '要确认吗', created_at: new Date().toISOString() }));
     const app = mount(sb.home);
-    await until(() => (app.lastFrame() ?? '').includes('要确认吗'));
+    await until(() => (app.lastFrame() ?? '').includes('要确认吗'), 'initial frame');
     app.stdin.write('x');
-    await until(() => readEntity(sb.home, 'ask', 'a-0001')?.state === 'resolved');
-    await until(() => (app.lastFrame() ?? '').includes('Needs you (0)'));
+    await until(() => readEntity(sb.home, 'ask', 'a-0001')?.state === 'resolved', 'ask file resolved');
+    await until(() => (app.lastFrame() ?? '').includes('Needs you (0)'), 'frame refreshed');
   });
 
   it('switches to single-panel mode with a number key', async () => {
