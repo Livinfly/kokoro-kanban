@@ -50,11 +50,16 @@ Below, `$SID` stands for that variable. If none is set, run `kokoro session star
 
    The `--` before the command is required. With `--detach` the output goes to the job's log file (`kokoro status --json` lists it under `jobs[].log`); check on it later with `kokoro status`.
 
-   Scripts you write can report progress, which the board turns into a progress bar:
+   Scripts you write can report progress, which the board turns into a progress bar.
+
+   - For multi-stage jobs, prefer a cumulative unit that advances within each stage, such as images, bytes, or training steps. Add completed stages' work to current-stage progress for `--done` and use the sum of all stage totals for `--total` when available. Put the current stage and the number of completed stages in `--msg`. Use stage counts when those are the available measure.
+   - When the job reports an overall ETA or measured throughput supports an estimate, include the approximate remaining time and expected finish time in `--msg`. Update the estimate with progress. Label a stage-only ETA with its stage. While the remaining time is unknown, report the measured progress.
 
    ```bash
-   kokoro job progress "$KOKORO_JOB" --done 3 --total 10 --unit files --msg "parsing batch 3"
-   echo '{"pct": 30, "msg": "epoch 1/3"}' >> "$KOKORO_PROGRESS_FILE"
+   kokoro job progress "$KOKORO_JOB" --done 1222 --total 5470 --unit images \
+     --msg "About 13 min left · finishes around 13:07 local · 1/8 benchmarks done · KITTI 568/652"
+   # Or append the equivalent update to "$KOKORO_PROGRESS_FILE" as JSON.
+   echo '{"done":1222,"total":5470,"unit":"images","msg":"About 13 min left · finishes around 13:07 local · 1/8 benchmarks done · KITTI 568/652"}' >> "$KOKORO_PROGRESS_FILE"
    ```
 
    For a process started some other way: `kokoro job start --session "$SID" --title "..." --pid <pid> --log <file>`, then `kokoro job end <jid> --state done|failed|cancelled`.
