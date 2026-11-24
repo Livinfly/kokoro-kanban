@@ -2,6 +2,6 @@ import { render } from 'ink';
 import { App, type AppProps } from './App.js';
 
 export async function startBoard(props: AppProps): Promise<void> {
-  const instance = render(<App {...props} />, { exitOnCtrlC: true });
+  const instance = render(<App {...props} />, { exitOnCtrlC: true, alternateScreen: true });
   await instance.waitUntilExit();
 }
