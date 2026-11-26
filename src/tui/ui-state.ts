@@ -17,7 +17,12 @@ export type UiState = {
 
 export type KeyEvent = { input: string; key: Partial<Key> };
 
-export type Effect = { type: 'resolve' | 'archive'; kind: Kind; id: string; store: string } | { type: 'quit' };
+type DoneTarget = { kind: 'job' | 'goal'; id: string; store: string };
+
+export type Effect =
+  | { type: 'resolve' | 'archive'; kind: Kind; id: string; store: string }
+  | { type: 'archive-done'; targets: DoneTarget[] }
+  | { type: 'quit' };
 
 const noSelection = (): Record<PanelId, number> => ({ needs: 0, sessions: 0, jobs: 0, goals: 0 });
 
@@ -99,6 +104,15 @@ export function reduceKey(previous: UiState, ev: KeyEvent, board: Board): { ui: 
   if (ui.detail) {
     if (key.escape || key.backspace || key.return) return { ui: { ...ui, detail: null } };
     return { ui };
+  }
+
+  if (input === 'A') {
+    const targets: DoneTarget[] = [
+      ...board.jobs.filter((job) => job.state === 'done').map(({ id, store }) => ({ kind: 'job' as const, id, store })),
+      ...board.goals.filter((goal) => goal.status === 'done').map(({ id, store }) => ({ kind: 'goal' as const, id, store })),
+    ];
+    if (targets.length === 0) return { ui: { ...ui, message: 'no done jobs or goals to archive' } };
+    return { ui, effect: { type: 'archive-done', targets } };
   }
 
   if (key.tab) return { ui: moveFocus(ui, key.shift ? -1 : 1) };

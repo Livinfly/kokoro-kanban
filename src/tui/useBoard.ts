@@ -11,7 +11,7 @@ import { boardFrom } from '../view/load.js';
 export const DEBOUNCE_MS = 100;
 export const TICK_MS = 2000;
 
-export type BoardSource = { board: Board; now: Date; version: number; reload: () => void };
+export type BoardSource = { board: Board; now: Date; version: number; boardIncludingHidden: () => Board; reload: () => void };
 
 function ignoredFor(stores: string[]) {
   return (p: string) => {
@@ -100,5 +100,6 @@ export function useBoard(opts: { home: string; projectFilter: string | null; sho
     indexRef.current!.loadAll();
     setVersion((v) => v + 1);
   };
-  return { board, now, version, reload };
+  const boardIncludingHidden = () => boardFrom(indexRef.current!, { home, now, projectFilter: opts.projectFilter, showAll: true });
+  return { board, now, version, boardIncludingHidden, reload };
 }

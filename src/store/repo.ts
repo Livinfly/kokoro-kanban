@@ -56,8 +56,10 @@ export function listIds(store: string, kind: Kind): string[] {
 export function archiveEntity(store: string, kind: Kind, id: string): void {
   const target = archiveDir(store, kind);
   mkdirSync(target, { recursive: true });
-  const files = [entityPath(store, kind, id)];
+  const files = [];
+  // Keep the job listed for retry if moving either of its companion files fails.
   if (kind === 'job') files.push(progressPath(store, id), logPath(store, id));
+  files.push(entityPath(store, kind, id));
   for (const file of files) {
     if (existsSync(file)) renameSync(file, path.join(target, path.basename(file)));
   }

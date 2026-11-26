@@ -137,6 +137,7 @@ Codex, Cursor and others only allow writes inside the workspace by default, so w
 | `1`–`4` / `0` | Single-panel mode / back to overview; `←` `→` switch panels in single-panel mode |
 | `x` | Resolve the selected ask |
 | `a` | Archive a finished item |
+| `Shift+A` | Archive all `done` jobs and goals in the current project filter, including older hidden items |
 | `p` | Filter by project |
 | `.` | Show / hide items finished more than 24 hours ago |
 | `q` | Quit |

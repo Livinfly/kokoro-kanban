@@ -117,8 +117,8 @@ function Footer({ p }: { p: BoardViewProps }) {
   const hints = ui.detail
     ? 'esc back  x resolve  a archive  q quit'
     : ui.mode === 'single'
-      ? 'tab/←→ panel  j/k move  enter detail  x resolve  a archive  p project  . all  0 overview  q quit'
-      : 'tab panel  j/k move  enter detail  x resolve  a archive  p project  . all  1-4 single  q quit';
+      ? 'A archive done  tab/←→ panel  j/k move  enter detail  x resolve  a archive  p project  . all  0 overview  q quit'
+      : 'A archive done  tab panel  j/k move  enter detail  x resolve  a archive  p project  . all  1-4 single  q quit';
   return (
     <Box flexDirection="column" paddingX={1}>
       {ui.message ? <Text color="yellow">{ui.message}</Text> : null}

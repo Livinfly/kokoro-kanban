@@ -13,7 +13,24 @@ export type AppProps = { home: string; homeDir: string; cwd: string; here: boole
 const LOG_LINES = 30;
 const LOG_TAIL_BYTES = 64 * 1024;
 
-function applyEffect(effect: Exclude<Effect, { type: 'quit' }>): void {
+function applyEffect(effect: Exclude<Effect, { type: 'quit' }>): string | void {
+  if (effect.type === 'archive-done') {
+    let archived = 0;
+    const failed: string[] = [];
+    for (const { store, kind, id } of effect.targets) {
+      try {
+        const done = kind === 'job'
+          ? readEntity(store, kind, id)?.state === 'done'
+          : readEntity(store, kind, id)?.status === 'done';
+        if (!done) continue;
+        archiveEntity(store, kind, id);
+        archived++;
+      } catch {
+        failed.push(id);
+      }
+    }
+    return `archived ${archived} done item${archived === 1 ? '' : 's'}${failed.length ? ` · failed: ${failed.join(', ')}` : ''}`;
+  }
   if (effect.type === 'archive') {
     archiveEntity(effect.store, effect.kind, effect.id);
     return;
@@ -24,22 +41,25 @@ function applyEffect(effect: Exclude<Effect, { type: 'quit' }>): void {
 
 export function App({ home, homeDir, cwd, here, panel }: AppProps) {
   const [ui, setUi] = useState(() => initialUi(panel, here ? currentProject(cwd, home) : null));
-  const { board, now, version, reload } = useBoard({ home, projectFilter: ui.projectFilter, showAll: ui.showAll });
+  const { board, now, version, boardIncludingHidden, reload } = useBoard({
+    home, projectFilter: ui.projectFilter, showAll: ui.showAll,
+  });
   const { columns, rows } = useWindowSize();
   const { exit } = useApp();
 
   useInput((input, key) => {
-    const { ui: next, effect } = reduceKey(ui, { input, key }, board);
+    const actionBoard = input === 'A' && !ui.detail && !ui.showAll ? boardIncludingHidden() : board;
+    const { ui: next, effect } = reduceKey(ui, { input, key }, actionBoard);
     if (effect?.type === 'quit') {
       exit();
       return;
     }
     if (effect) {
       try {
-        applyEffect(effect);
+        const message = applyEffect(effect);
+        if (message) next.message = message;
       } catch (err) {
-        setUi({ ...next, message: `failed: ${(err as Error).message}` });
-        return;
+        next.message = `failed: ${(err as Error).message}`;
       }
       reload();
     }
